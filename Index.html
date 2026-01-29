@@ -1,169 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Carta Contemplada</title>
+    <title>Calculadora Pro: Consórcio Contemplado</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 450px;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 1.5rem;
-        }
-        .input-group {
-            margin-bottom: 1rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #555;
-            font-weight: 600;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box; /* Garante que o padding não aumente a largura */
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 1rem;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .result h3 {
-            margin: 0;
-            color: #333;
-            font-size: 1rem;
-        }
-        .result p {
-            margin: 0.5rem 0 0;
-            color: #28a745;
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        .details {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 1.5rem; }
+        .section-title { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; margin: 15px 0 5px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        label { display: block; margin-top: 10px; color: #34495e; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #bdc3c7; border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52,152,219,0.3); }
+        button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        button:hover { background: #1abc9c; }
+        
+        .result-box { margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; display: none; }
+        .result-positive { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .result-negative { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        .big-number { font-size: 2rem; font-weight: 800; margin: 10px 0; }
+        .detail-row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 4px; }
+        .info-icon { cursor: help; color: #2980b9; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Calculadora de Venda<br>Carta Contemplada</h2>
+    <h2>💰 Calculadora Carta Contemplada</h2>
+
+    <div class="section-title">Dados da Carta (Futuro)</div>
+    <label>Valor do Crédito (R$) <span title="Valor que o comprador vai pegar na mão" class="info-icon">?</span></label>
+    <input type="number" id="credito" placeholder="Ex: 80000">
+
+    <label>Valor da Parcela Atual (R$) <span title="Parcela PÓS-contemplação" class="info-icon">?</span></label>
+    <input type="number" id="parcela" placeholder="Ex: 1000">
+
+    <label>Prazo Restante (Meses)</label>
+    <input type="number" id="prazo" placeholder="Ex: 300">
+
+    <label>Taxa de Juro de Mercado (% a.m.)</label>
+    <input type="number" id="taxa" value="0.70" step="0.01">
+    <small style="color:#7f8c8d;">Taxa atrativa para venda (Ex: entre 0.60 e 0.90)</small>
+
+    <div class="section-title">Seus Custos (Passado)</div>
+    <label>Total Pago em Parcelas (R$)</label>
+    <input type="number" id="pagoParcelas" placeholder="Quanto você já pagou?">
     
-    <div class="input-group">
-        <label for="credito">Valor do Crédito (R$)</label>
-        <input type="number" id="credito" placeholder="Ex: 105960" step="0.01">
-    </div>
+    <label>Valor do Lance Pago (R$) <small>(Se houver)</small></label>
+    <input type="number" id="valorLance" value="0">
 
-    <div class="input-group">
-        <label for="parcela">Valor da Parcela (R$)</label>
-        <input type="number" id="parcela" placeholder="Ex: 661.80" step="0.01">
-    </div>
+    <button onclick="calcular()">Calcular Venda e Lucro</button>
 
-    <div class="input-group">
-        <label for="prazo">Prazo Restante (Meses)</label>
-        <input type="number" id="prazo" placeholder="Ex: 221">
-    </div>
-
-    <div class="input-group">
-        <label for="taxa">Taxa de Juro Atrativa (% ao mês)</label>
-        <input type="number" id="taxa" placeholder="Ex: 0.65" step="0.01">
-        <small style="color: #888;">Taxa sugerida para atrair o comprador (ex: 0.65)</small>
-    </div>
-
-    <button onclick="calcular()">Calcular Valor de Venda</button>
-
-    <div id="resultado" class="result" style="display:none;">
-        <h3>Valor Sugerido para Venda:</h3>
-        <p id="valorVenda">R$ 0,00</p>
-        <div class="details">
-            Valor Financiável (Dívida Real): <span id="valorFinanciavel">R$ 0,00</span>
+    <div id="resVenda" class="result-box">
+        <h3>Valor Ideal de Venda (Ágio)</h3>
+        <div id="valorVendaDisplay" class="big-number">R$ 0,00</div>
+        
+        <div class="detail-row">
+            <span>Dívida Real (VP):</span>
+            <span id="vpDisplay">R$ 0,00</span>
+        </div>
+        <div style="font-size:0.8rem; margin-top:5px;">
+            *Este é o valor que deve pedir de "Entrada".
         </div>
     </div>
+
+    <div id="resLucro" class="result-box" style="margin-top: 10px;">
+        <h3>Seu Resultado (Lucro/Prejuízo)</h3>
+        <div id="lucroDisplay" class="big-number">R$ 0,00</div>
+        <div class="detail-row">
+            <span>Venda Sugerida:</span>
+            <span id="vendaRecap">R$ 0,00</span>
+        </div>
+        <div class="detail-row">
+            <span>(-) Total Investido (Parcelas + Lance):</span>
+            <span id="investidoRecap">R$ 0,00</span>
+        </div>
+    </div>
+
 </div>
 
 <script>
     function calcular() {
-        // Obter os valores dos inputs
-        const credito = parseFloat(document.getElementById('credito').value);
-        const parcela = parseFloat(document.getElementById('parcela').value);
-        const prazo = parseFloat(document.getElementById('prazo').value);
-        const taxaPercentual = parseFloat(document.getElementById('taxa').value);
-
-        // Validação simples
-        if (isNaN(credito) || isNaN(parcela) || isNaN(prazo) || isNaN(taxaPercentual)) {
-            alert("Por favor, preencha todos os campos corretamente.");
-            return;
-        }
-
-        // Converter taxa percentual para decimal
-        const i = taxaPercentual / 100;
-
-        // Cálculo do Valor Presente (PV) - Fórmula Financeira
-        // PV = PMT * [ (1 - (1+i)^-n) / i ]
-        const pv = parcela * ( (1 - Math.pow(1 + i, -prazo)) / i );
-
-        // Cálculo do Valor de Venda
-        // Venda = Crédito - PV
-        const valorVenda = credito - pv;
-
-        // Exibir resultados
-        const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        // 1. Pegar valores
+        let credito = parseFloat(document.getElementById('credito').value) || 0;
+        let parcela = parseFloat(document.getElementById('parcela').value) || 0;
+        let prazo = parseFloat(document.getElementById('prazo').value) || 0;
+        let taxa = parseFloat(document.getElementById('taxa').value) || 0;
         
-        document.getElementById('valorVenda').innerText = formatador.format(valorVenda);
-        document.getElementById('valorFinanciavel').innerText = formatador.format(pv);
-        
-        // Mudar cor se o valor for negativo (prejuízo/inviável)
-        const valorVendaEl = document.getElementById('valorVenda');
-        if (valorVenda < 0) {
-            valorVendaEl.style.color = '#dc3545'; // Vermelho
-        } else {
-            valorVendaEl.style.color = '#28a745'; // Verde
-        }
+        let pagoParcelas = parseFloat(document.getElementById('pagoParcelas').value) || 0;
+        let valorLance = parseFloat(document.getElementById('valorLance').value) || 0;
 
-        document.getElementById('resultado').style.display = 'block';
+        // 2. Cálculo do Valor Presente (Dívida Real)
+        // Fórmula Financeira: PV = PMT * [ (1 - (1+i)^-n) / i ]
+        let i = taxa / 100;
+        let vp = parcela * ( (1 - Math.pow(1 + i, -prazo)) / i );
+
+        // 3. Valor de Venda (Ágio)
+        // O valor do lance pago "entra" no crédito disponível se já foi abatido, 
+        // mas para venda simples: Crédito Líquido - Dívida Real
+        let valorVenda = credito - vp;
+
+        // 4. Cálculo do Lucro
+        let totalInvestido = pagoParcelas + valorLance;
+        let lucro = valorVenda - totalInvestido; // Se o lance foi embutido, a lógica muda, mas assumindo lance livre.
+
+        // 5. Exibir formatado
+        const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Atualiza Venda
+        let divVenda = document.getElementById('resVenda');
+        divVenda.style.display = 'block';
+        document.getElementById('valorVendaDisplay').innerText = fmt.format(valorVenda);
+        document.getElementById('vpDisplay').innerText = fmt.format(vp);
+        
+        divVenda.className = 'result-box ' + (valorVenda >= 0 ? 'result-positive' : 'result-negative');
+
+        // Atualiza Lucro
+        let divLucro = document.getElementById('resLucro');
+        divLucro.style.display = 'block';
+        document.getElementById('lucroDisplay').innerText = fmt.format(lucro);
+        document.getElementById('vendaRecap').innerText = fmt.format(valorVenda);
+        document.getElementById('investidoRecap').innerText = fmt.format(totalInvestido);
+
+        divLucro.className = 'result-box ' + (lucro >= 0 ? 'result-positive' : 'result-negative');
     }
 </script>
 
 </body>
 </html>
-
