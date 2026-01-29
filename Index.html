@@ -3,127 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Pro: Consórcio Contemplado</title>
+    <title>App Consórcio Pro</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 1.5rem; }
-        .section-title { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; margin: 15px 0 5px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        label { display: block; margin-top: 10px; color: #34495e; font-weight: 600; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #bdc3c7; border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52,152,219,0.3); }
-        button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        button:hover { background: #1abc9c; }
+        /* --- ESTILOS GERAIS --- */
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: #f0f2f5; 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden; /* Evita rolagem horizontal ao abrir menu */
+        }
         
-        .result-box { margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; display: none; }
-        .result-positive { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .result-negative { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        /* --- CABEÇALHO (HEADER) --- */
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .menu-btn {
+            font-size: 1.8rem;
+            cursor: pointer;
+            margin-right: 20px;
+            background: none;
+            border: none;
+            color: white;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* --- MENU LATERAL (SIDEBAR) --- */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1100;
+            top: 0;
+            left: -250px; /* Escondido por padrão */
+            background-color: #343a40;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            color: #d1d1d1;
+            display: block;
+            transition: 0.3s;
+            border-bottom: 1px solid #454d55;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+            background-color: #495057;
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            border: none;
+            background: none;
+        }
+
+        /* Overlay escuro quando o menu abre */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1050;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Classes para mostrar/esconder telas */
+        .view-section {
+            display: none; /* Esconde tudo por padrão */
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.4s;
+        }
         
-        .big-number { font-size: 2rem; font-weight: 800; margin: 10px 0; }
-        .detail-row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 4px; }
-        .info-icon { cursor: help; color: #2980b9; font-size: 0.8rem; }
+        .active-view {
+            display: block; /* Mostra a tela ativa */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- ESTILOS DA CALCULADORA (Mantidos da V3) --- */
+        .card { 
+            background: white; padding: 25px; border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        }
+        .section-label { 
+            font-size: 0.85rem; font-weight: 700; text-transform: uppercase; 
+            color: #666; margin: 20px 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; display: block;
+        }
+        .input-row { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; color: #444; font-weight: 500; font-size: 0.95rem; }
+        input { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; 
+            font-size: 1rem; box-sizing: border-box; 
+        }
+        button.action-btn { 
+            width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; 
+            border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 25px; 
+        }
+        
+        /* --- ESTILOS DO DASHBOARD --- */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .dash-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .dash-card h4 { margin: 0; color: #666; font-size: 0.9rem; }
+        .dash-value { font-size: 1.5rem; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+        .chart-placeholder {
+            background: white;
+            height: 200px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            border: 2px dashed #eee;
+            margin-top: 20px;
+        }
+
+        /* Resultado Calculadora */
+        .result-card { 
+            margin-top: 25px; padding: 20px; border-radius: 12px; background: #f8f9fa; border: 1px solid #e9ecef; display: none; 
+        }
+        .big-value { font-size: 2.2rem; font-weight: 800; text-align: center; margin: 10px 0; color: #2c3e50; }
+        .profit { color: #28a745; }
+        .loss { color: #dc3545; }
+        .summary-table { width: 100%; font-size: 0.9rem; border-collapse: collapse; margin-top: 15px; }
+        .summary-table td { padding: 6px 0; border-bottom: 1px dashed #ddd; }
+        .summary-table td:last-child { text-align: right; font-weight: 600; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>💰 Calculadora Carta Contemplada</h2>
+<div id="mySidebar" class="sidebar">
+    <button class="close-btn" onclick="closeMenu()">×</button>
+    <div style="text-align: center; color: white; margin-bottom: 30px; font-weight: bold;">MENU</div>
+    <a href="#" onclick="switchView('calculadora')">🔢 Calculadora</a>
+    <a href="#" onclick="switchView('dashboard')">📊 Dashboard</a>
+    <a href="#" onclick="closeMenu()">❌ Fechar</a>
+</div>
 
-    <div class="section-title">Dados da Carta (Futuro)</div>
-    <label>Valor do Crédito (R$) <span title="Valor que o comprador vai pegar na mão" class="info-icon">?</span></label>
-    <input type="number" id="credito" placeholder="Ex: 80000">
+<div id="myOverlay" class="overlay" onclick="closeMenu()"></div>
 
-    <label>Valor da Parcela Atual (R$) <span title="Parcela PÓS-contemplação" class="info-icon">?</span></label>
-    <input type="number" id="parcela" placeholder="Ex: 1000">
+<header>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <div class="app-title">Consórcio Manager</div>
+</header>
 
-    <label>Prazo Restante (Meses)</label>
-    <input type="number" id="prazo" placeholder="Ex: 300">
+<div class="main-content">
 
-    <label>Taxa de Juro de Mercado (% a.m.)</label>
-    <input type="number" id="taxa" value="0.70" step="0.01">
-    <small style="color:#7f8c8d;">Taxa atrativa para venda (Ex: entre 0.60 e 0.90)</small>
+    <div id="view-calculadora" class="view-section active-view">
+        <div class="card">
+            <h2 style="text-align: center; margin-top: 0;">Nova Simulação</h2>
 
-    <div class="section-title">Seus Custos (Passado)</div>
-    <label>Total Pago em Parcelas (R$)</label>
-    <input type="number" id="pagoParcelas" placeholder="Quanto você já pagou?">
-    
-    <label>Valor do Lance Pago (R$) <small>(Se houver)</small></label>
-    <input type="number" id="valorLance" value="0">
+            <span class="section-label">Dados do Plano</span>
+            <div class="input-row">
+                <label>Valor do Crédito (Carta)</label>
+                <input type="number" id="credito" placeholder="Ex: 80000">
+            </div>
+            <div class="input-row">
+                <label>Valor da Parcela Atual</label>
+                <input type="number" id="parcela" placeholder="Ex: 1000">
+            </div>
+            <div class="input-row">
+                <label>Prazo Total do Plano (Meses)</label>
+                <input type="number" id="prazoTotal" placeholder="Ex: 180">
+            </div>
 
-    <button onclick="calcular()">Calcular Venda e Lucro</button>
+            <span class="section-label">Seus Pagamentos</span>
+            <div class="input-row">
+                <label>Parcelas já pagas</label>
+                <input type="number" id="qtdPagas" placeholder="Ex: 10">
+            </div>
+            <div class="input-row">
+                <label>Lance (R$)</label>
+                <input type="number" id="lance" placeholder="0 se não houve" value="0">
+            </div>
 
-    <div id="resVenda" class="result-box">
-        <h3>Valor Ideal de Venda (Ágio)</h3>
-        <div id="valorVendaDisplay" class="big-number">R$ 0,00</div>
-        
-        <div class="detail-row">
-            <span>Dívida Real (VP):</span>
-            <span id="vpDisplay">R$ 0,00</span>
-        </div>
-        <div style="font-size:0.8rem; margin-top:5px;">
-            *Este é o valor que deve pedir de "Entrada".
+            <span class="section-label">Mercado</span>
+            <div class="input-row">
+                <label>Taxa de Juro Atrativa (% a.m.)</label>
+                <input type="number" id="taxa" value="0.70" step="0.01">
+            </div>
+
+            <button class="action-btn" onclick="calcular()">Calcular Agora</button>
+
+            <div id="resultado" class="result-card">
+                <h3 style="text-align:center; margin:0;">Sugestão de Venda</h3>
+                <div id="valorVenda" class="big-value">R$ 0,00</div>
+                <table class="summary-table">
+                    <tr><td>Dívida Real (VP):</td><td id="dividaReal">R$ 0,00</td></tr>
+                    <tr><td>Prazo Restante:</td><td id="prazoRestante">0 meses</td></tr>
+                    <tr><td colspan="2" style="height:10px;"></td></tr>
+                    <tr><td>Investimento Total:</td><td id="totalInvestido">R$ 0,00</td></tr>
+                    <tr><td><strong>Lucro Líquido:</strong></td><td id="lucroLiquido">R$ 0,00</td></tr>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div id="resLucro" class="result-box" style="margin-top: 10px;">
-        <h3>Seu Resultado (Lucro/Prejuízo)</h3>
-        <div id="lucroDisplay" class="big-number">R$ 0,00</div>
-        <div class="detail-row">
-            <span>Venda Sugerida:</span>
-            <span id="vendaRecap">R$ 0,00</span>
+    <div id="view-dashboard" class="view-section">
+        <h2 style="color:#333; margin-bottom: 20px;">Meu Painel</h2>
+        
+        <div class="dash-grid">
+            <div class="dash-card">
+                <h4>Taxa Selic (Ref.)</h4>
+                <div class="dash-value">11.25%</div>
+            </div>
+            <div class="dash-card">
+                <h4>Taxa Média Consórcio</h4>
+                <div class="dash-value">0.90%</div>
+            </div>
         </div>
-        <div class="detail-row">
-            <span>(-) Total Investido (Parcelas + Lance):</span>
-            <span id="investidoRecap">R$ 0,00</span>
+
+        <div class="card">
+            <h3>Última Simulação</h3>
+            <p style="color: #666; font-size: 0.9rem;">Resumo visual do seu último cálculo.</p>
+            
+            <div style="margin-top: 20px;">
+                <label style="font-size: 0.8rem;">Rentabilidade vs Custo</label>
+                <div style="background: #eee; height: 20px; border-radius: 10px; overflow: hidden; display: flex; margin-top: 5px;">
+                    <div id="bar-investido" style="width: 50%; background: #007bff;" title="Investido"></div>
+                    <div id="bar-lucro" style="width: 50%; background: #28a745;" title="Lucro"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 5px; color: #666;">
+                    <span>Investido</span>
+                    <span>Lucro Estimado</span>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">
+                <div style="text-align: center;">
+                    <div style="font-size: 30px;">📈</div>
+                    <p>Histórico de Simulações<br><small>(Em desenvolvimento)</small></p>
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script>
-    function calcular() {
-        // 1. Pegar valores
-        let credito = parseFloat(document.getElementById('credito').value) || 0;
-        let parcela = parseFloat(document.getElementById('parcela').value) || 0;
-        let prazo = parseFloat(document.getElementById('prazo').value) || 0;
-        let taxa = parseFloat(document.getElementById('taxa').value) || 0;
+    // --- LÓGICA DO MENU ---
+    function openMenu() {
+        document.getElementById("mySidebar").style.left = "0";
+        document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function closeMenu() {
+        document.getElementById("mySidebar").style.left = "-250px";
+        document.getElementById("myOverlay").style.display = "none";
+    }
+
+    // --- LÓGICA DE TROCA DE TELAS (ABAS) ---
+    function switchView(viewName) {
+        // Esconde todas as views
+        document.getElementById('view-calculadora').classList.remove('active-view');
+        document.getElementById('view-dashboard').classList.remove('active-view');
         
-        let pagoParcelas = parseFloat(document.getElementById('pagoParcelas').value) || 0;
-        let valorLance = parseFloat(document.getElementById('valorLance').value) || 0;
+        // Mostra a selecionada
+        document.getElementById('view-' + viewName).classList.add('active-view');
+        
+        // Fecha o menu automaticamente
+        closeMenu();
+    }
 
-        // 2. Cálculo do Valor Presente (Dívida Real)
-        // Fórmula Financeira: PV = PMT * [ (1 - (1+i)^-n) / i ]
-        let i = taxa / 100;
-        let vp = parcela * ( (1 - Math.pow(1 + i, -prazo)) / i );
+    // --- LÓGICA DA CALCULADORA (V3.0) ---
+    function calcular() {
+        const credito = parseFloat(document.getElementById('credito').value) || 0;
+        const parcela = parseFloat(document.getElementById('parcela').value) || 0;
+        const prazoTotal = parseFloat(document.getElementById('prazoTotal').value) || 0;
+        const qtdPagas = parseFloat(document.getElementById('qtdPagas').value) || 0;
+        const lance = parseFloat(document.getElementById('lance').value) || 0;
+        const taxa = parseFloat(document.getElementById('taxa').value) || 0;
 
-        // 3. Valor de Venda (Ágio)
-        // O valor do lance pago "entra" no crédito disponível se já foi abatido, 
-        // mas para venda simples: Crédito Líquido - Dívida Real
-        let valorVenda = credito - vp;
+        if(credito === 0 || parcela === 0 || prazoTotal === 0) {
+            alert("Preencha os dados do plano!");
+            return;
+        }
 
-        // 4. Cálculo do Lucro
-        let totalInvestido = pagoParcelas + valorLance;
-        let lucro = valorVenda - totalInvestido; // Se o lance foi embutido, a lógica muda, mas assumindo lance livre.
+        let prazoRestante = prazoTotal - qtdPagas;
+        if (prazoRestante < 0) prazoRestante = 0;
 
-        // 5. Exibir formatado
+        const totalInvestido = (qtdPagas * parcela) + lance;
+        const i = taxa / 100;
+        const valorDividaPresente = parcela * ( (1 - Math.pow(1 + i, -prazoRestante)) / i );
+        const valorVenda = credito - valorDividaPresente;
+        const lucro = valorVenda - totalInvestido;
+
         const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        // Atualiza Venda
-        let divVenda = document.getElementById('resVenda');
-        divVenda.style.display = 'block';
-        document.getElementById('valorVendaDisplay').innerText = fmt.format(valorVenda);
-        document.getElementById('vpDisplay').innerText = fmt.format(vp);
+        document.getElementById('valorVenda').innerText = fmt.format(valorVenda);
+        document.getElementById('dividaReal').innerText = fmt.format(valorDividaPresente);
+        document.getElementById('prazoRestante').innerText = prazoRestante + " meses";
+        document.getElementById('totalInvestido').innerText = fmt.format(totalInvestido);
         
-        divVenda.className = 'result-box ' + (valorVenda >= 0 ? 'result-positive' : 'result-negative');
+        const elLucro = document.getElementById('lucroLiquido');
+        elLucro.innerText = fmt.format(lucro);
 
-        // Atualiza Lucro
-        let divLucro = document.getElementById('resLucro');
-        divLucro.style.display = 'block';
-        document.getElementById('lucroDisplay').innerText = fmt.format(lucro);
-        document.getElementById('vendaRecap').innerText = fmt.format(valorVenda);
-        document.getElementById('investidoRecap').innerText = fmt.format(totalInvestido);
+        // Cores
+        if (lucro >= 0) {
+            elLucro.style.color = "#28a745";
+            elLucro.innerText += " (Lucro)";
+        } else {
+            elLucro.style.color = "#dc3545";
+            elLucro.innerText += " (Prejuízo)";
+        }
 
-        divLucro.className = 'result-box ' + (lucro >= 0 ? 'result-positive' : 'result-negative');
+        const elVenda = document.getElementById('valorVenda');
+        if (valorVenda < 0) {
+            elVenda.classList.add('loss');
+            elVenda.classList.remove('profit');
+        } else {
+            elVenda.classList.add('profit');
+            elVenda.classList.remove('loss');
+        }
+
+        document.getElementById('resultado').style.display = 'block';
+
+        // Atualizar Dashboard (Barra Visual Simples)
+        atualizarDashboardVisual(totalInvestido, lucro);
+    }
+
+    function atualizarDashboardVisual(investido, lucro) {
+        // Lógica simples para a barra do dashboard
+        let total = investido + Math.abs(lucro); 
+        // Evita divisão por zero
+        if (total === 0) total = 1;
+
+        let pctInvestido = (investido / total) * 100;
+        let pctLucro = (Math.abs(lucro) / total) * 100;
+
+        document.getElementById('bar-investido').style.width = pctInvestido + "%";
+        
+        const barLucro = document.getElementById('bar-lucro');
+        barLucro.style.width = pctLucro + "%";
+        
+        if (lucro < 0) {
+            barLucro.style.backgroundColor = "#dc3545"; // Vermelho se prejuízo
+        } else {
+            barLucro.style.backgroundColor = "#28a745"; // Verde se lucro
+        }
     }
 </script>
 
