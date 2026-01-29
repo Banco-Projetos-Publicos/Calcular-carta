@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Carta Contemplada</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Garante que o padding não aumente a largura */
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .result h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1rem;
+        }
+        .result p {
+            margin: 0.5rem 0 0;
+            color: #28a745;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculadora de Venda<br>Carta Contemplada</h2>
+    
+    <div class="input-group">
+        <label for="credito">Valor do Crédito (R$)</label>
+        <input type="number" id="credito" placeholder="Ex: 105960" step="0.01">
+    </div>
+
+    <div class="input-group">
+        <label for="parcela">Valor da Parcela (R$)</label>
+        <input type="number" id="parcela" placeholder="Ex: 661.80" step="0.01">
+    </div>
+
+    <div class="input-group">
+        <label for="prazo">Prazo Restante (Meses)</label>
+        <input type="number" id="prazo" placeholder="Ex: 221">
+    </div>
+
+    <div class="input-group">
+        <label for="taxa">Taxa de Juro Atrativa (% ao mês)</label>
+        <input type="number" id="taxa" placeholder="Ex: 0.65" step="0.01">
+        <small style="color: #888;">Taxa sugerida para atrair o comprador (ex: 0.65)</small>
+    </div>
+
+    <button onclick="calcular()">Calcular Valor de Venda</button>
+
+    <div id="resultado" class="result" style="display:none;">
+        <h3>Valor Sugerido para Venda:</h3>
+        <p id="valorVenda">R$ 0,00</p>
+        <div class="details">
+            Valor Financiável (Dívida Real): <span id="valorFinanciavel">R$ 0,00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calcular() {
+        // Obter os valores dos inputs
+        const credito = parseFloat(document.getElementById('credito').value);
+        const parcela = parseFloat(document.getElementById('parcela').value);
+        const prazo = parseFloat(document.getElementById('prazo').value);
+        const taxaPercentual = parseFloat(document.getElementById('taxa').value);
+
+        // Validação simples
+        if (isNaN(credito) || isNaN(parcela) || isNaN(prazo) || isNaN(taxaPercentual)) {
+            alert("Por favor, preencha todos os campos corretamente.");
+            return;
+        }
+
+        // Converter taxa percentual para decimal
+        const i = taxaPercentual / 100;
+
+        // Cálculo do Valor Presente (PV) - Fórmula Financeira
+        // PV = PMT * [ (1 - (1+i)^-n) / i ]
+        const pv = parcela * ( (1 - Math.pow(1 + i, -prazo)) / i );
+
+        // Cálculo do Valor de Venda
+        // Venda = Crédito - PV
+        const valorVenda = credito - pv;
+
+        // Exibir resultados
+        const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        document.getElementById('valorVenda').innerText = formatador.format(valorVenda);
+        document.getElementById('valorFinanciavel').innerText = formatador.format(pv);
+        
+        // Mudar cor se o valor for negativo (prejuízo/inviável)
+        const valorVendaEl = document.getElementById('valorVenda');
+        if (valorVenda < 0) {
+            valorVendaEl.style.color = '#dc3545'; // Vermelho
+        } else {
+            valorVendaEl.style.color = '#28a745'; // Verde
+        }
+
+        document.getElementById('resultado').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
+
